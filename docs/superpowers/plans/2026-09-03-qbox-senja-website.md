@@ -116,7 +116,8 @@ git commit -m "feat: initialize Next.js project with Supabase client and Vitest"
 **Files:**
 - Create: `app/layout.tsx`
 - Create: `app/globals.css`
-- Delete: `app/page.module.css` (if generated — we don't use CSS modules)
+
+Note: `app/page.module.css` is intentionally left in place by this task — the scaffold's default `app/page.tsx` still imports it, and deleting it before Task 14 replaces `page.tsx` breaks the build. Task 14 removes it together with replacing `page.tsx`.
 
 - [ ] **Step 1: Write the root layout with Roboto + Lora**
 
@@ -355,17 +356,10 @@ footer p { font-family: var(--font-roboto), Arial, sans-serif; font-size: 12.5px
 .lock-error { font-family: var(--font-roboto), Arial, sans-serif; font-size: 12px; color: var(--rose); margin: 0; }
 ```
 
-- [ ] **Step 3: Remove generated CSS module if present**
-
-```bash
-rm -f app/page.module.css
-```
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add app/layout.tsx app/globals.css
-git rm --cached app/page.module.css 2>/dev/null || true
 git commit -m "feat: port Artifact styles into globals.css, wire up Roboto/Lora"
 ```
 
