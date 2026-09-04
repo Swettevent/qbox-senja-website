@@ -518,7 +518,7 @@ insert into packing_items (section, text, sort_order) values
   ('activities', 'Badkläder', 3);
 ```
 
-Verify: `select count(*) from schedule_entries;` → 23. `select count(*) from packing_items;` → 7.
+Verify: `select count(*) from schedule_entries;` → 28. `select count(*) from packing_items;` → 7.
 
 ---
 
