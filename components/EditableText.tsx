@@ -23,9 +23,14 @@ export default function EditableText({
 }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
+  const [prevValue, setPrevValue] = useState(value)
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null)
 
-  useEffect(() => setDraft(value), [value])
+  if (value !== prevValue) {
+    setPrevValue(value)
+    setDraft(value)
+  }
+
   useEffect(() => {
     if (editing) inputRef.current?.focus()
   }, [editing])
