@@ -931,7 +931,7 @@ export async function addDay(
 export async function updateDay(
   supabase: SupabaseClient,
   id: string,
-  patch: Partial<Pick<ScheduleDay, 'day_name' | 'day_tag' | 'accent'>>
+  patch: Partial<Pick<ScheduleDay, 'day_name' | 'day_tag'>> & { accent?: string }
 ) {
   return supabase.from('schedule_days').update(patch).eq('id', id)
 }
