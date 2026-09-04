@@ -50,7 +50,7 @@ qbox-senja-website/
 ├── public/
 │   ├── logo.png                   # already extracted from the Artifact
 │   └── hamn-senja.jpg             # already extracted from the Artifact
-└── vitest.config.ts
+└── vitest.config.mts
 ```
 
 ---
@@ -526,8 +526,14 @@ Verify: `select count(*) from schedule_entries;` → 28. `select count(*) from p
 
 **Files:**
 - Create: `lib/supabase-server.ts`
-- Create: `vitest.config.ts`
+- Create: `vitest.config.mts`
 - Create: `vitest.setup.ts`
+
+Note: `vitest@^5.0.0` requires `vite` itself as a dependency (Task 1 installed vitest, @vitejs/plugin-react, and the testing-library packages, but not `vite` directly) and a peer-compatible `@types/node` (vitest 5 needs `^22.0.0 || >=24.0.0`; the scaffold had `^20`). Before Step 2, run:
+
+```bash
+npm install -D @types/node@^22 vite
+```
 
 - [ ] **Step 1: Create the Supabase server client**
 
@@ -546,11 +552,12 @@ export function getSupabaseServer() {
 
 - [ ] **Step 2: Create vitest config**
 
+The file is `.mts` (not `.ts`) and uses `import.meta.dirname` (not `__dirname`) — Vite's native config loader warns on both otherwise.
+
 ```typescript
-// vitest.config.ts
+// vitest.config.mts
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
@@ -560,7 +567,7 @@ export default defineConfig({
     globals: true,
   },
   resolve: {
-    alias: { '@': path.resolve(__dirname, '.') },
+    alias: { '@': import.meta.dirname },
   },
 })
 ```
@@ -580,10 +587,18 @@ In `package.json`, add to `"scripts"`:
 "test:run": "vitest run"
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Verify the wiring is clean**
 
 ```bash
-git add lib/supabase-server.ts vitest.config.ts vitest.setup.ts package.json
+npm run test:run
+```
+
+Expected: `No test files found, exiting with code 1` — that's fine, no test files exist yet (Task 5 adds the first). What matters is there are no warnings above it (no ESM/CommonJS or `__dirname` warnings). Also re-run `npm run build` to confirm the dependency changes didn't break anything.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add lib/supabase-server.ts vitest.config.mts vitest.setup.ts package.json package-lock.json
 git commit -m "feat: add Supabase server client and Vitest configuration"
 ```
 
