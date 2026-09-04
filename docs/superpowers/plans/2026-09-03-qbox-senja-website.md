@@ -576,8 +576,10 @@ export default defineConfig({
 
 ```typescript
 // vitest.setup.ts
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 ```
+
+Use the `/vitest` subpath, not the bare package import — this version of `@testing-library/jest-dom` ships a dedicated entry point that correctly augments Vitest's own `expect` types. The bare import registers the matchers at runtime but leaves `next build`'s project-wide type-check unable to see them, failing on every `toBeInTheDocument()` call in test files.
 
 - [ ] **Step 4: Add test scripts to package.json**
 
