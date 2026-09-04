@@ -1223,6 +1223,8 @@ Expected: FAIL — `Cannot find module '@/components/EditableText'`
 
 - [ ] **Step 3: Implement components/EditableText.tsx**
 
+Resetting `draft` when `value` changes is done during render (comparing against a `prevValue` state), not in a `useEffect` — `eslint-plugin-react-hooks`'s `set-state-in-effect` rule flags a bare `useEffect(() => setDraft(value), [value])` as the cascading-render anti-pattern; the render-time comparison is React's documented pattern for this exact case ("Adjusting state when a prop changes").
+
 ```typescript
 // components/EditableText.tsx
 'use client'
@@ -1250,9 +1252,14 @@ export default function EditableText({
 }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
+  const [prevValue, setPrevValue] = useState(value)
   const inputRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null)
 
-  useEffect(() => setDraft(value), [value])
+  if (value !== prevValue) {
+    setPrevValue(value)
+    setDraft(value)
+  }
+
   useEffect(() => {
     if (editing) inputRef.current?.focus()
   }, [editing])
@@ -1520,11 +1527,14 @@ git commit -m "feat: add Hero component with editable hero text"
 
 - [ ] **Step 1: Implement components/Timeline.tsx**
 
+The breakout photo uses `next/image` (with the actual file's intrinsic 1400×950 dimensions) rather than a plain `<img>` — Next's `no-img-element` lint rule flags plain `<img>` for LCP/bandwidth reasons. The existing `.photo-break img` CSS rule (Task 2) still applies unchanged since `next/image` renders a real `<img>` under the hood, so the responsive `width:100%; height:auto; max-height:280px; object-fit:cover` sizing is unaffected — no inline style needed.
+
 ```typescript
 // components/Timeline.tsx
 'use client'
 
 import { Fragment } from 'react'
+import Image from 'next/image'
 import EditableText from './EditableText'
 import type { DayWithEntries } from '@/lib/db'
 import {
@@ -1658,7 +1668,7 @@ export default function Timeline({ days, editMode, onChange }: Props) {
                 {entry.photo_url && (
                   <>
                     <div className="photo-break">
-                      <img src={entry.photo_url} alt={entry.photo_caption ?? ''} />
+                      <Image src={entry.photo_url} alt={entry.photo_caption ?? ''} width={1400} height={950} />
                     </div>
                     <p className="photo-caption">
                       <EditableText
